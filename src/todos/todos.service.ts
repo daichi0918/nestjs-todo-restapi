@@ -1,41 +1,57 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Todo } from './todos.model';
+import { Todo } from '@prisma/client';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TodosService {
+  constructor(private readonly prismaService: PrismaService) {}
   private todos: Todo[] = [];
-  findAll(): Todo[] {
-    return this.todos;
+  async findAll(): Promise<Todo[]> {
+    return await this.prismaService.todo.findMany();
   }
 
-  findById(id: number): Todo {
-    const found = this.todos.find((todo) => todo.id === id);
+  async findById(id: number): Promise<Todo> {
+    const found = await this.prismaService.todo.findUnique({
+      where: {
+        id,
+      },
+    });
     if (!found) throw new NotFoundException();
     return found;
   }
 
-  create(createTodoDto: CreateTodoDto): Todo {
-    const todo: Todo = {
-      ...createTodoDto,
-    };
-    this.todos.push(todo);
-    return todo;
+  async create(createTodoDto: CreateTodoDto): Promise<Todo> {
+    // const todo: Todo = {
+    //   ...createTodoDto,
+    // };
+    // this.todos.push(todo);
+    // return todo;
+    const { title, content } = createTodoDto;
+    return await this.prismaService.todo.create({
+      data: {
+        title,
+        content,
+      },
+    });
   }
 
-  update(id: number, todo: Todo): Todo {
-    const index = this.todos.findIndex((t) => t.id === id);
-    if (index === -1) {
-      throw new Error(`Todo with id ${id} not found`);
-    }
-
-    // 更新対象のTodoを上書き
-    this.todos[index] = { ...this.todos[index], ...todo };
-    return this.todos[index];
+  async update(id: number, todo: CreateTodoDto): Promise<Todo> {
+    const { title, content } = todo;
+    return await this.prismaService.todo.update({
+      data: {
+        title,
+        content,
+      },
+      where: {
+        id,
+      },
+    });
   }
 
-  delete(id: number) {
-    const newTodo = this.todos.filter((todo) => todo.id !== id);
-    this.todos = newTodo;
+  async delete(id: number) {
+    await this.prismaService.todo.delete({
+      where: { id },
+    });
   }
 }

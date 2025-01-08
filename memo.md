@@ -28,3 +28,16 @@ npx prisma init
 ```
 npx prisma migrate dev --name init
 ```
+
+### prismaクライアントインストール
+
+```
+npm i @prisma/client
+```
+
+### prismaファイル作成コマンド
+
+```
+nest g module prisma
+nest g service prisma --no-spec
+```

@@ -9,54 +9,47 @@ import {
   Put,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
-import { Todo } from './todos.model';
+import { Todo } from '@prisma/client';
 import { CreateTodoDto } from './dto/create-todo.dto';
 
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
   @Get()
-  findAll(): Todo[] {
-    return this.todosService.findAll();
+  async findAll(): Promise<Todo[]> {
+    return await this.todosService.findAll();
   }
 
   @Get(':id')
-  findById(@Param('id') id: string): Todo {
+  async findById(@Param('id') id: string): Promise<Todo> {
     return this.todosService.findById(Number(id));
   }
 
   @Post()
-  create(
+  async create(
     // @Body('id') id: number,
     // @Body('title') title: string,
     // @Body('content') content: string,
     @Body() createTodoDto: CreateTodoDto,
-  ): Todo {
+  ): Promise<Todo> {
     // const todo: Todo = {
     //   id,
     //   title,
     //   content,
     // };
-    return this.todosService.create(createTodoDto);
+    return await this.todosService.create(createTodoDto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
-    @Body('title') title: string,
-    @Body('content') content: string,
-  ): Todo {
-    const NumId = Number(id);
-    const todo: Todo = {
-      id: NumId,
-      title,
-      content,
-    };
-    return this.todosService.update(NumId, todo);
+    @Body() createTodoDto: CreateTodoDto,
+  ): Promise<Todo> {
+    return await this.todosService.update(Number(id), createTodoDto);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.todosService.delete(Number(id));
+  async delete(@Param('id') id: string) {
+    return await this.todosService.delete(Number(id));
   }
 }
