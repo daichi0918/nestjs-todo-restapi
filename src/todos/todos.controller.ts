@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { Todo } from './todos.model';
+import { CreateTodoDto } from './dto/create-todo.dto';
 
 @Controller('todos')
 export class TodosController {
@@ -26,16 +27,17 @@ export class TodosController {
 
   @Post()
   create(
-    @Body('id') id: number,
-    @Body('title') title: string,
-    @Body('content') content: string,
+    // @Body('id') id: number,
+    // @Body('title') title: string,
+    // @Body('content') content: string,
+    @Body() createTodoDto: CreateTodoDto,
   ): Todo {
-    const todo: Todo = {
-      id,
-      title,
-      content,
-    };
-    return this.todosService.create(todo);
+    // const todo: Todo = {
+    //   id,
+    //   title,
+    //   content,
+    // };
+    return this.todosService.create(createTodoDto);
   }
 
   @Put(':id')
