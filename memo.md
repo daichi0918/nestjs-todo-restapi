@@ -47,3 +47,9 @@ nest g service prisma --no-spec
 ```
 nest g resource auth --no-spec
 ```
+
+### userテーブル追加
+
+```
+npx prisma migrate dev --name addUser
+```
