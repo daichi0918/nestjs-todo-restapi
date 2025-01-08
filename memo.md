@@ -41,3 +41,9 @@ npm i @prisma/client
 nest g module prisma
 nest g service prisma --no-spec
 ```
+
+### authフォルダ作成コマンド
+
+```
+nest g resource auth --no-spec
+```
