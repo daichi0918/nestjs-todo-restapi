@@ -21,7 +21,7 @@ export class TodosService {
     return found;
   }
 
-  async create(createTodoDto: CreateTodoDto): Promise<Todo> {
+  async create(createTodoDto: CreateTodoDto, userId: number): Promise<Todo> {
     // const todo: Todo = {
     //   ...createTodoDto,
     // };
@@ -32,7 +32,7 @@ export class TodosService {
       data: {
         title,
         content,
-        userId: 1,
+        userId,
       },
     });
   }

@@ -7,10 +7,15 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { Todo } from '@prisma/client';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Request as ExpressRequest } from 'express';
+import { RequestUser } from 'types/requestUser';
 
 @Controller('todos')
 export class TodosController {
@@ -26,21 +31,16 @@ export class TodosController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   async create(
-    // @Body('id') id: number,
-    // @Body('title') title: string,
-    // @Body('content') content: string,
     @Body() createTodoDto: CreateTodoDto,
+    @Request() req: ExpressRequest & { user: RequestUser },
   ): Promise<Todo> {
-    // const todo: Todo = {
-    //   id,
-    //   title,
-    //   content,
-    // };
-    return await this.todosService.create(createTodoDto);
+    return await this.todosService.create(createTodoDto, req.user.id);
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('jwt'))
   async update(
     @Param('id') id: string,
     @Body() createTodoDto: CreateTodoDto,
@@ -49,6 +49,7 @@ export class TodosController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   async delete(@Param('id') id: string) {
     return await this.todosService.delete(Number(id));
   }
