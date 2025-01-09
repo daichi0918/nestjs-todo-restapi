@@ -53,3 +53,27 @@ nest g resource auth --no-spec
 ```
 npx prisma migrate dev --name addUser
 ```
+
+### passportインストールコマンド
+
+```
+npm i passport @nestjs/passport
+```
+
+### jwtインストールコマンド
+
+```
+npm i passport-jwt @nestjs/jwt
+```
+
+### jwtのtypeインストールコマンド
+
+```
+npm i -D @types/passport-jwt
+```
+
+### 秘密鍵(JWT_SECRET)で使うランダムの文字列生成コマンド
+
+```
+openssl rand -hex 32
+```
