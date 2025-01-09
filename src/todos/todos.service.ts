@@ -32,6 +32,7 @@ export class TodosService {
       data: {
         title,
         content,
+        userId: 1,
       },
     });
   }
