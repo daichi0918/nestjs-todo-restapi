@@ -14,18 +14,47 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<any> {
     const { name, email, password } = createUserDto;
 
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (!!user) {
+      throw new UnauthorizedException(
+        `${email} は別のアカウントで使用されています。`,
+      );
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    return await this.prismaService.user.create({
+    const createdUser = await this.prismaService.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
       },
     });
+
+    const resUser: User = {
+      id: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+      password: createdUser.password,
+      createdAt: createdUser.createdAt,
+      updateAt: createdUser.updateAt,
+    };
+
+    const payload: JwtPayload = {
+      sub: createdUser.id,
+      username: createdUser.name,
+    };
+    return {
+      user: resUser,
+      accessToken: this.jwtService.sign(payload),
+    };
   }
   async signIn(credentialsDto: CredentialsDto): Promise<{ token: string }> {
     const { email, password } = credentialsDto;
