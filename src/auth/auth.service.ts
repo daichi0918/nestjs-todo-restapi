@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CredentialsDto } from './dto/credentials.dto';
 import { JwtPayload } from 'types/jwtPayload';
+import { ResponseUserType } from 'src/interfaces/User';
 
 @Injectable()
 export class AuthService {
@@ -38,11 +39,10 @@ export class AuthService {
       },
     });
 
-    const resUser: User = {
+    const resUser: ResponseUserType = {
       id: createdUser.id,
       name: createdUser.name,
       email: createdUser.email,
-      password: createdUser.password,
       createdAt: createdUser.createdAt,
       updateAt: createdUser.updateAt,
     };
@@ -73,5 +73,33 @@ export class AuthService {
     }
 
     throw new UnauthorizedException();
+  }
+
+  async authCheck(userId: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) throw new UnauthorizedException('認証データが存在しません');
+
+    const resUser: ResponseUserType = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updateAt: user.updateAt,
+    };
+
+    const payload: JwtPayload = {
+      sub: user.id,
+      username: user.name,
+    };
+
+    return {
+      user: resUser,
+      accessToken: this.jwtService.sign(payload),
+    };
   }
 }
