@@ -26,6 +26,6 @@ export class AuthController {
   @Post('authentication')
   @UseGuards(AuthGuard('jwt'))
   async authentication(@Request() req: ExpressRequest & { user: RequestUser }) {
-    return await this.authService.authCheck(req.user.id);
+    return await this.authService.authCheck(req.user.userId);
   }
 }

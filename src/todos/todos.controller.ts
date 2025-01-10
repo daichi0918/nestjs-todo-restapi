@@ -21,8 +21,11 @@ import { RequestUser } from 'types/requestUser';
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
   @Get()
-  async findAll(): Promise<Todo[]> {
-    return await this.todosService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  async findAll(
+    @Request() req: ExpressRequest & { user: RequestUser },
+  ): Promise<Todo[]> {
+    return await this.todosService.findAll(req.user.userId);
   }
 
   @Get(':id')
@@ -36,7 +39,7 @@ export class TodosController {
     @Body() createTodoDto: CreateTodoDto,
     @Request() req: ExpressRequest & { user: RequestUser },
   ): Promise<Todo> {
-    return await this.todosService.create(createTodoDto, req.user.id);
+    return await this.todosService.create(createTodoDto, req.user.userId);
   }
 
   @Put(':id')

@@ -7,8 +7,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class TodosService {
   constructor(private readonly prismaService: PrismaService) {}
   private todos: Todo[] = [];
-  async findAll(): Promise<Todo[]> {
-    return await this.prismaService.todo.findMany();
+  async findAll(userId: number): Promise<Todo[]> {
+    return await this.prismaService.todo.findMany({
+      where: {
+        userId,
+      },
+    });
   }
 
   async findById(id: number): Promise<Todo> {
